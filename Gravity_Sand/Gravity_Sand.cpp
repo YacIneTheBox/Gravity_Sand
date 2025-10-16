@@ -1,10 +1,14 @@
 #include <iostream>
 #include "raylib.h"
 
+
+using namespace std;
+
 typedef struct SandParticle {
 	float x, y;         // Position
 	float vx, vy;       // Velocity 
 	bool active;      // Is the particle active (falling) or settled
+	bool moving;
 } SandParticle;
 
 void GravityForce(SandParticle& p);
@@ -12,7 +16,8 @@ int main()
 {
 	const int screenWidth = 800;
 	const int screenHeight = 600;
-	const int NUM_PARTICULES = 100;
+	const int NUM_PARTICULES = 400;
+	const int SIZE_PART = 10;
 
 	InitWindow(screenWidth, screenHeight, "Gravity Sand Simulation");
 	SetTargetFPS(60);
@@ -31,6 +36,9 @@ int main()
 	int cmpt_particule = 0; // Counter to control particle activation
 	while(!WindowShouldClose())
 	{
+
+
+
 		if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && cmpt_particule < NUM_PARTICULES) {
 			// Activate a new particle
 			particules[cmpt_particule].x = GetMouseX();
@@ -38,6 +46,7 @@ int main()
 			particules[cmpt_particule].vx = 0;
 			particules[cmpt_particule].vy = 0;
 			particules[cmpt_particule].active = true;
+			particules[cmpt_particule].moving = true;
 			cmpt_particule = (cmpt_particule + 1) % NUM_PARTICULES; // Loop back to start
 		}
 
@@ -48,22 +57,21 @@ int main()
 				particules[i].x += particules[i].vx;
 				particules[i].y += particules[i].vy;
 			}
-
-			if (particules[i].y >= screenHeight) {
-				particules[i].y = screenHeight;
-				particules[i].vy = 0; // Settle the particle
-			}
-
 		}
 
 		BeginDrawing();
-		ClearBackground(BLACK);
+		ClearBackground(DARKGRAY);
 
 		// Update and draw particles
 		for (int i = 0; i < NUM_PARTICULES; i++) {
 			if (particules[i].active){
-				DrawRectangle(particules[i].x, particules[i].y, 5, 5, YELLOW);
-				GravityForce(particules[i]);
+				DrawRectangle(particules[i].x, particules[i].y, SIZE_PART, SIZE_PART, YELLOW);
+				if (particules[i].y < screenHeight - SIZE_PART)GravityForce(particules[i]);
+				else {
+					particules[i].vy = 0;
+					particules[i].moving = false;
+				}
+				
 			}
 		}
 
