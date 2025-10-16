@@ -78,7 +78,7 @@ int main()
 		EndDrawing();
 	}
 }
-
+// adding some gravity to the particle 
 void GravityForce(SandParticle &p) {
 	const float gravity = 0.5f; // Gravity acceleration
 	p.vy += gravity;
